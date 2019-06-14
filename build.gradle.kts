@@ -11,7 +11,9 @@ repositories {
 }
 
 dependencies {
-    testCompile("junit", "junit", "4.12")
+    compile("com.google.guava:guava:28.0-jre")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 configure<JavaPluginConvention> {
@@ -20,4 +22,11 @@ configure<JavaPluginConvention> {
 
 application {
     mainClassName = "com.github.andrepnh.packer.Packer"
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    testLogging {
+        events("PASSED", "FAILED", "SKIPPED")
+    }
 }
