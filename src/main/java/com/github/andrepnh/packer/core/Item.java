@@ -3,6 +3,8 @@ package com.github.andrepnh.packer.core;
 import static com.github.andrepnh.packer.APIPreconditions.check;
 
 import com.github.andrepnh.exception.APIException;
+import com.google.common.base.MoreObjects;
+import java.util.Objects;
 
 public class Item {
   private final int index;
@@ -25,12 +27,31 @@ public class Item {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Item item = (Item) o;
+    return index == item.index &&
+        Double.compare(item.weight, weight) == 0 &&
+        Double.compare(item.cost, cost) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(index, weight, cost);
+  }
+
+  @Override
   public String toString() {
-    return "Item{" +
-        "index=" + index +
-        ", weight=" + weight +
-        ", cost=" + cost +
-        '}';
+    return MoreObjects.toStringHelper(this)
+        .add("index", index)
+        .add("weight", weight)
+        .add("cost", cost)
+        .toString();
   }
 
   public int getIndex() {

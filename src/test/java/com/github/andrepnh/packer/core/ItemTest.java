@@ -4,45 +4,43 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.andrepnh.exception.APIException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class ItemTest {
-  @Test
-  public void shouldNotAllowZeroOrNegativeIndex() {
-    for (int badIndex: new int[] {0, -1, Integer.MIN_VALUE}) {
-      assertThrows(
-          APIException.class,
-          () -> new Item(badIndex, 1, 1),
-          "Expected exception for index: " + badIndex);
-    }
+class ItemTest {
+  @ParameterizedTest
+  @ValueSource(ints = { 0, -1, Integer.MIN_VALUE })
+  void shouldNotAllowZeroOrNegativeIndex(int badIndex) {
+      assertThrows(APIException.class, () -> new Item(badIndex, 1, 1));
   }
 
   @Test
-  public void shouldAllowZeroWeight() {
+  void shouldAllowZeroWeight() {
     new Item(1, 0,1);
   }
 
   @Test
-  public void shouldNotAllowNegativeWeight() {
+  void shouldNotAllowNegativeWeight() {
     assertThrows(APIException.class, () -> new Item(1, -0.001, 1));
   }
 
   @Test
-  public void shouldNotAllowWeightsGreaterThan100() {
+  void shouldNotAllowWeightsGreaterThan100() {
     assertThrows(APIException.class, () -> new Item(1, 100.001, 1));
   }
 
   @Test
-  public void shouldAllowZeroCost() {
+  void shouldAllowZeroCost() {
     new Item(1, 1F, 0);
   }
 
   @Test
-  public void shouldNotAllowNegativeCost() {
+  void shouldNotAllowNegativeCost() {
     assertThrows(APIException.class, () -> new Item(1, 1, -0.001));
   }
 
   @Test
-  public void shouldNotAllowCostsGreaterThan100() {
+  void shouldNotAllowCostsGreaterThan100() {
     assertThrows(APIException.class, () -> new Item(1, 1, 100.001));
   }
 }

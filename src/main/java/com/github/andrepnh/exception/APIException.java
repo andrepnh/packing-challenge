@@ -12,8 +12,8 @@ public class APIException extends RuntimeException {
     super(message);
   }
 
-  public APIException(String message, Throwable cause) {
-    super(message, cause);
+  public APIException(Throwable cause, String format, Object... args) {
+    super(String.format(format, args), cause);
   }
 
   public APIException(Throwable cause) {

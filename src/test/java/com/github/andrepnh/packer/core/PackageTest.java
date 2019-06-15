@@ -8,15 +8,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class PackageTest {
+class PackageTest {
   @Test
-  public void shouldNotAllowNullItems() {
+  void shouldNotAllowNullItems() {
     assertThrows(NullPointerException.class, () -> new Package(1, null));
   }
 
   @Test
-  public void shouldAllowAnyNumberOfItemsThatDoNotExceedPackageLimit() {
+  void shouldAllowAnyNumberOfItemsThatDoNotExceedPackageLimit() {
     double weightLimit = 100, itemWeight = 0.01;
     for (int itemAmount: new int[] {0, 1, (int)(weightLimit / itemWeight)}) {
       List<Item> items = IntStream.range(0, itemAmount)
@@ -27,7 +29,7 @@ public class PackageTest {
   }
 
   @Test
-  public void shouldNotAllowItemsWeightToExceedPackageLimit() {
+  void shouldNotAllowItemsWeightToExceedPackageLimit() {
     int itemAmount = 3, itemWeight = 3, packageLimit = itemWeight * itemAmount - 1;
     List<Item> items = IntStream.range(0, itemAmount)
         .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, itemWeight, 1))
@@ -36,21 +38,19 @@ public class PackageTest {
   }
 
   @Test
-  public void shouldNotAllowWeightLimitAbove100() {
+  void shouldNotAllowWeightLimitAbove100() {
     assertThrows(APIException.class, () -> new Package(100.001, Collections.emptyList()));
   }
 
-  @Test
-  public void shouldNotAllowZeroOrNegativeWeightLimit() {
-    for (double badWeightLimit: new double[] {0, -0.001, -1}) {
-      assertThrows(APIException.class, () -> new Package(badWeightLimit, Collections.emptyList()));
-    }
+  @ParameterizedTest
+  @ValueSource(doubles = {0, -0.001, -1})
+  void shouldNotAllowZeroOrNegativeWeightLimit(double badWeightLimit) {
+    assertThrows(APIException.class, () -> new Package(badWeightLimit, Collections.emptyList()));
   }
 
-  @Test
-  public void shouldAllowValidWeightLimits() {
-    for (double weightLimit: new double[] {0.01, 1, 99.99, 100}) {
-      new Package(weightLimit, Collections.emptyList());
-    }
+  @ParameterizedTest
+  @ValueSource(doubles = {0.01, 1, 99.99, 100})
+  void shouldAllowValidWeightLimits(double weightLimit) {
+    new Package(weightLimit, Collections.emptyList());
   }
 }

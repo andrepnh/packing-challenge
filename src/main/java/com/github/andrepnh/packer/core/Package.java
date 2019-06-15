@@ -4,6 +4,7 @@ import static com.github.andrepnh.packer.APIPreconditions.check;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 
@@ -22,7 +23,7 @@ public class Package {
         .sum();
     // User input is ok, but the algorithm has made a mistake -- we won't throw APIException
     checkArgument(totalWeight <= weightLimit,
-        "The total weight of the items exceed the package limit: %s > %s",
+        "The total weight of the items exceeded the package limit: %s > %s",
         totalWeight, weightLimit);
     this.weightLimit = weightLimit;
     this.items = ImmutableList.copyOf(items);
@@ -30,10 +31,10 @@ public class Package {
 
   @Override
   public String toString() {
-    return "Package{" +
-        "weightLimit=" + weightLimit +
-        ", items=" + items +
-        '}';
+    return MoreObjects.toStringHelper(this)
+        .add("weightLimit", weightLimit)
+        .add("items", items)
+        .toString();
   }
 
   public double getWeightLimit() {
