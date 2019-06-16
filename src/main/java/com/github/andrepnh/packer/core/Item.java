@@ -9,11 +9,11 @@ import java.util.Objects;
 public class Item {
   private final int index;
 
-  private final double weight;
-
   private final double cost;
 
-  public Item(int index, double weight, double cost) throws APIException {
+  private final double weight;
+
+  public Item(int index, double cost, double weight) throws APIException {
     check(index > 0, "Index should be greater than 0; got %d", index);
     check(weight >= 0 && weight <= 100,
         "Weight must be between 0 and 100 (inclusive); got %.2f",

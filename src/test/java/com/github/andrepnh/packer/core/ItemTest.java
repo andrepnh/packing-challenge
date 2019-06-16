@@ -16,31 +16,31 @@ class ItemTest {
 
   @Test
   void shouldAllowZeroWeight() {
-    new Item(1, 0,1);
+    new Item(1, 1, 0);
   }
 
   @Test
   void shouldNotAllowNegativeWeight() {
-    assertThrows(APIException.class, () -> new Item(1, -0.001, 1));
-  }
-
-  @Test
-  void shouldNotAllowWeightsGreaterThan100() {
-    assertThrows(APIException.class, () -> new Item(1, 100.001, 1));
-  }
-
-  @Test
-  void shouldAllowZeroCost() {
-    new Item(1, 1F, 0);
-  }
-
-  @Test
-  void shouldNotAllowNegativeCost() {
     assertThrows(APIException.class, () -> new Item(1, 1, -0.001));
   }
 
   @Test
-  void shouldNotAllowCostsGreaterThan100() {
+  void shouldNotAllowWeightsGreaterThan100() {
     assertThrows(APIException.class, () -> new Item(1, 1, 100.001));
+  }
+
+  @Test
+  void shouldAllowZeroCost() {
+    new Item(1, 0, 1F);
+  }
+
+  @Test
+  void shouldNotAllowNegativeCost() {
+    assertThrows(APIException.class, () -> new Item(1, -0.001, 1));
+  }
+
+  @Test
+  void shouldNotAllowCostsGreaterThan100() {
+    assertThrows(APIException.class, () -> new Item(1, 100.001, 1));
   }
 }

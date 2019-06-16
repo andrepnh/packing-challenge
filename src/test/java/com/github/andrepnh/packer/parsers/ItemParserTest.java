@@ -22,8 +22,8 @@ class ItemParserTest {
   void shouldParseMultipleItems() {
     var rawItems = "(1,2.2,€3.3) (55,66.66,€77.77)";
     var expectedItems = Lists.newArrayList(
-        new Item(1, 2.2, 3.3),
-        new Item(55, 66.66, 77.77)
+        new Item(1, 3.3, 2.2),
+        new Item(55, 77.77, 66.66)
     );
 
     Iterable<Item> items = parser.apply(rawItems);
@@ -74,7 +74,7 @@ class ItemParserTest {
   @Test
   void shouldIgnoreTrailingWhitespaceAroundParenthesis() {
     var rawItem = "  (1,2.2,€3.3) ";
-    var expectedItem = new Item(1, 2.2, 3.3);
+    var expectedItem = new Item(1, 3.3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -84,7 +84,7 @@ class ItemParserTest {
   @Test
   void shouldIgnoreWhitespaceBetweenSeparators() {
     var rawItem = "(1 , 2.2  ,   €3.3)";
-    var expectedItem = new Item(1, 2.2, 3.3);
+    var expectedItem = new Item(1, 3.3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -124,7 +124,7 @@ class ItemParserTest {
   @Test
   void shouldAllowIntegerWeight() {
     var rawItem = "(1,2,€3.3)";
-    var expectedItem = new Item(1, 2, 3.3);
+    var expectedItem = new Item(1, 3.3, 2);
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -134,7 +134,7 @@ class ItemParserTest {
   @Test
   void shouldAllowIntegerCost() {
     var rawItem = "(1,2.2,€3)";
-    var expectedItem = new Item(1, 2.2, 3);
+    var expectedItem = new Item(1, 3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);
 
