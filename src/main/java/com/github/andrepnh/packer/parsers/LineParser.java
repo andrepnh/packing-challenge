@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.packer.core.Input;
 import com.github.andrepnh.packer.core.Item;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class LineParser implements Parser<Optional<Input>> {
         WEIGHT_LIMIT_SEPARATOR);
 
     return Optional.of(new Input(
-        tryParse("weightLimit", weightLimitAndItems.get(0), Integer::parseInt),
+        tryParse("weightLimit", weightLimitAndItems.get(0), BigDecimal::new),
         itemParser.apply(weightLimitAndItems.get(1))
     ));
   }

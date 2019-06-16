@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.andrepnh.exception.APIException;
 import com.github.andrepnh.packer.core.Input;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -19,15 +20,15 @@ class LineParserTest {
 
   @Test
   void shouldParseValidLine() {
-    var weightLimit = 11;
+    var weightLimit = new BigDecimal(11);
     Optional<Input> result = parser.apply(weightLimit + " : whatever");
     assertEquals(weightLimit, result.map(Input::getWeightLimit).orElse(null));
   }
 
   @Test
   void shouldIgnoreTrailingWhitespace() {
-    var weightLimit = 51;
-    var line = String.format(" \t%d : whatever\n", weightLimit);
+    var weightLimit = new BigDecimal(51);
+    var line = String.format(" \t%s : whatever\n", weightLimit);
     Optional<Input> result = parser.apply(line);
     assertEquals(weightLimit, result.map(Input::getWeightLimit).orElse(null));
   }
@@ -39,7 +40,7 @@ class LineParserTest {
 
   @Test
   void shouldParseLineEvenIfThereIsNoWhitespaceAroundTheWeightLimitSeparator() {
-    var weightLimit = 99;
+    var weightLimit = new BigDecimal(99);
     Optional<Input> result = parser.apply(weightLimit + ":whatever");
     assertEquals(weightLimit, result.map(Input::getWeightLimit).orElse(null));
   }

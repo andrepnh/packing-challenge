@@ -1,26 +1,44 @@
 package com.github.andrepnh.packer.algorithm;
 
+import static java.math.BigDecimal.ZERO;
+
 import com.github.andrepnh.packer.core.Item;
 import com.google.common.base.MoreObjects;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 class CostAndWeight {
-  private final double cost;
+  private final BigDecimal cost;
 
-  private final double weight;
+  private final BigDecimal weight;
 
-  CostAndWeight(double cost, double weight) {
+  CostAndWeight(BigDecimal cost, BigDecimal weight) {
     this.cost = cost;
     this.weight = weight;
   }
 
   static CostAndWeight sumOf(Iterable<Item> items) {
-    double totalCost = 0, totalWeight = 0;
+    BigDecimal totalCost = ZERO, totalWeight = ZERO;
     for (Item item: items) {
-      totalCost += item.getCost();
-      totalWeight += item.getWeight();
+      totalCost = totalCost.add(item.getCost());
+      totalWeight = totalWeight.add(item.getWeight());
     }
     return new CostAndWeight(totalCost, totalWeight);
+  }
+
+  CostAndWeight add(CostAndWeight that) {
+    return new CostAndWeight(this.cost.add(that.cost), this.weight.add(that.weight));
+  }
+
+  boolean fits(BigDecimal weightLimit) {
+    return this.weight.compareTo(weightLimit) <= 0;
+  }
+
+  boolean isHigherCostOrSameCostButLowerWeight(CostAndWeight other) {
+    var higherCost = this.cost.compareTo(other.cost) > 0;
+    var sameCostLowerWeight = this.cost.compareTo(other.cost) == 0
+        && this.weight.compareTo(other.weight) < 0;
+    return higherCost || sameCostLowerWeight;
   }
 
   @Override
@@ -32,8 +50,8 @@ class CostAndWeight {
       return false;
     }
     CostAndWeight that = (CostAndWeight) o;
-    return Double.compare(that.cost, cost) == 0 &&
-        Double.compare(that.weight, weight) == 0;
+    return that.cost.compareTo(cost) == 0 &&
+        that.weight.compareTo(weight) == 0;
   }
 
   @Override
@@ -49,11 +67,11 @@ class CostAndWeight {
         .toString();
   }
 
-  double getCost() {
+  BigDecimal getCost() {
     return cost;
   }
 
-  double getWeight() {
+  BigDecimal getWeight() {
     return weight;
   }
 }

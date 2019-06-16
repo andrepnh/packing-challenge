@@ -3,6 +3,7 @@ package com.github.andrepnh.packer.parsers;
 import static com.github.andrepnh.packer.APIPreconditions.check;
 
 import com.github.andrepnh.packer.core.Item;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -38,12 +39,12 @@ public class ItemParser implements Parser<Iterable<Item>> {
     return new Item(
         tryParse("index", fields.get(0), Integer::parseInt),
         tryParse("cost", fields.get(2), this::parseCurrency),
-        tryParse("weight", fields.get(1), Double::parseDouble)
+        tryParse("weight", fields.get(1), BigDecimal::new)
     );
   }
 
-  private double parseCurrency(String raw) {
+  private BigDecimal parseCurrency(String raw) {
     check(raw.startsWith(EURO_SIGN), "Cost missing currency symbol: %s", raw);
-    return Double.parseDouble(raw.replaceFirst(EURO_SIGN, ""));
+    return new BigDecimal(raw.replaceFirst(EURO_SIGN, ""));
   }
 }

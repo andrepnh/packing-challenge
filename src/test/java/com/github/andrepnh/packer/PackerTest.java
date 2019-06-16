@@ -1,5 +1,6 @@
 package com.github.andrepnh.packer;
 
+import static java.math.BigDecimal.ONE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,6 +18,7 @@ import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -61,13 +63,13 @@ class PackerTest {
   @Test
   void shouldSortIndexesBeforePrinting() throws IOException {
     var items = Lists.newArrayList(
-        new Item(2, 1, 1),
-        new Item(1, 1, 1),
-        new Item(11, 1, 1), // To make sure we're not sorting lexicographically
-        new Item(5, 1, 1),
-        new Item(3, 1, 1)
+        new Item(2, ONE, ONE),
+        new Item(1, ONE, ONE),
+        new Item(11, ONE, ONE), // To make sure we're not sorting lexicographically
+        new Item(5, ONE, ONE),
+        new Item(3, ONE, ONE)
     );
-    var fileContents = Stream.of(new Input(50, items));
+    var fileContents = Stream.of(new Input(new BigDecimal(50), items));
     when(fileParserMock.parse(placeholderFile)).thenReturn(fileContents);
     String sortedIndexes = items.stream()
         .map(Item::getIndex)
@@ -82,7 +84,7 @@ class PackerTest {
 
   @Test
   void shouldPrintASpecialSymbolIfPackageIsEmpty() throws IOException {
-    var fileContents = Stream.of(new Input(50, Collections.emptyList()));
+    var fileContents = Stream.of(new Input(new BigDecimal(50), Collections.emptyList()));
     when(fileParserMock.parse(placeholderFile)).thenReturn(fileContents);
 
     List<String> packageItems = pack();

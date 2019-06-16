@@ -2,27 +2,31 @@ package com.github.andrepnh.packer.core;
 
 import static com.github.andrepnh.packer.APIPreconditions.check;
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+import java.math.BigDecimal;
 import java.util.Collection;
 
 public class Package {
-  private final double weightLimit;
+  private static final BigDecimal MAXIMUM_LIMIT = new BigDecimal("100");
+
+  private final BigDecimal weightLimit;
 
   private final ImmutableList<Item> items;
 
-  public Package(double weightLimit, Collection<Item> items) {
-    check(weightLimit > 0 && weightLimit <= 100,
-        "Package weight limit must be between 0 (exclusive) and 100 (inclusive); got %.2f",
+  public Package(BigDecimal weightLimit, Collection<Item> items) {
+    check(weightLimit.compareTo(ZERO) > 0 && weightLimit.compareTo(MAXIMUM_LIMIT) <= 0,
+        "Package weight limit must be between 0 (exclusive) and 100 (inclusive); got %s",
         weightLimit);
-    double totalWeight = requireNonNull(items)
+    BigDecimal totalWeight = requireNonNull(items)
         .stream()
-        .mapToDouble(Item::getWeight)
-        .sum();
+        .map(Item::getWeight)
+        .reduce(ZERO, BigDecimal::add);
     // User input is ok, but the algorithm has made a mistake -- we won't throw APIException
-    checkArgument(totalWeight <= weightLimit,
+    checkArgument(totalWeight.compareTo(weightLimit) <= 0,
         "The total weight of the items exceeded the package limit: %s > %s",
         totalWeight, weightLimit);
     this.weightLimit = weightLimit;
@@ -37,7 +41,7 @@ public class Package {
         .toString();
   }
 
-  public double getWeightLimit() {
+  public BigDecimal getWeightLimit() {
     return weightLimit;
   }
 

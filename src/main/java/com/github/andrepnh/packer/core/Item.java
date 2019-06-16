@@ -1,25 +1,33 @@
 package com.github.andrepnh.packer.core;
 
 import static com.github.andrepnh.packer.APIPreconditions.check;
+import static java.math.BigDecimal.ZERO;
+import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.exception.APIException;
 import com.google.common.base.MoreObjects;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Item {
+  public static final BigDecimal MAXIMUM_WEIGHT = new BigDecimal("100");
+  public static final BigDecimal MAXIMUM_COST = new BigDecimal("100");
+
   private final int index;
 
-  private final double cost;
+  private final BigDecimal cost;
 
-  private final double weight;
+  private final BigDecimal weight;
 
-  public Item(int index, double cost, double weight) throws APIException {
+  public Item(int index, BigDecimal cost, BigDecimal weight) throws APIException {
+    requireNonNull(cost);
+    requireNonNull(weight);
     check(index > 0, "Index should be greater than 0; got %d", index);
-    check(weight >= 0 && weight <= 100,
-        "Weight must be between 0 and 100 (inclusive); got %.2f",
+    check(weight.compareTo(ZERO) >= 0 && weight.compareTo(MAXIMUM_WEIGHT) <= 0,
+        "Weight must be between 0 and 100 (inclusive); got %s",
         weight);
-    check(cost >= 0 && cost <= 100,
-        "Cost must be between 0 and 100 (inclusive); got %.2f",
+    check(cost.compareTo(ZERO) >= 0 && cost.compareTo(MAXIMUM_COST) <= 0,
+        "Cost must be between 0 and 100 (inclusive); got %s",
         cost);
     this.index = index;
     this.weight = weight;
@@ -36,13 +44,13 @@ public class Item {
     }
     Item item = (Item) o;
     return index == item.index &&
-        Double.compare(item.weight, weight) == 0 &&
-        Double.compare(item.cost, cost) == 0;
+        cost.compareTo(item.cost) == 0 && // compareTo instead of equals to ignore scale differences
+        weight.compareTo(item.weight) == 0;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(index, weight, cost);
+    return Objects.hash(index, cost, weight);
   }
 
   @Override
@@ -58,11 +66,11 @@ public class Item {
     return index;
   }
 
-  public double getWeight() {
+  public BigDecimal getWeight() {
     return weight;
   }
 
-  public double getCost() {
+  public BigDecimal getCost() {
     return cost;
   }
 }

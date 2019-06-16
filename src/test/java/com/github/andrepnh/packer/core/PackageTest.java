@@ -1,8 +1,10 @@
 package com.github.andrepnh.packer.core;
 
+import static java.math.BigDecimal.ONE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.andrepnh.exception.APIException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class PackageTest {
   @Test
   void shouldNotAllowNullItems() {
-    assertThrows(NullPointerException.class, () -> new Package(1, null));
+    assertThrows(NullPointerException.class, () -> new Package(ONE, null));
   }
 
   @Test
@@ -22,9 +24,9 @@ class PackageTest {
     double weightLimit = 100, itemWeight = 0.01;
     for (int itemAmount: new int[] {0, 1, (int)(weightLimit / itemWeight)}) {
       List<Item> items = IntStream.range(0, itemAmount)
-          .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, 1, 0.01))
+          .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, ONE, new BigDecimal("0.01")))
           .collect(Collectors.toList());
-      new Package(100, items);
+      new Package(new BigDecimal(100), items);
     }
   }
 
@@ -32,25 +34,31 @@ class PackageTest {
   void shouldNotAllowItemsWeightToExceedPackageLimit() {
     int itemAmount = 3, itemWeight = 3, packageLimit = itemWeight * itemAmount - 1;
     List<Item> items = IntStream.range(0, itemAmount)
-        .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, 1, itemWeight))
+        .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, ONE, new BigDecimal(itemWeight)))
         .collect(Collectors.toList());
-    assertThrows(IllegalArgumentException.class, () -> new Package(packageLimit, items));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Package(new BigDecimal(packageLimit), items));
   }
 
   @Test
   void shouldNotAllowWeightLimitAbove100() {
-    assertThrows(APIException.class, () -> new Package(100.001, Collections.emptyList()));
+    assertThrows(
+        APIException.class,
+        () -> new Package(new BigDecimal("100.001"), Collections.emptyList()));
   }
 
   @ParameterizedTest
-  @ValueSource(doubles = {0, -0.001, -1})
-  void shouldNotAllowZeroOrNegativeWeightLimit(double badWeightLimit) {
-    assertThrows(APIException.class, () -> new Package(badWeightLimit, Collections.emptyList()));
+  @ValueSource(strings = {"0", "-0.001", "-1"})
+  void shouldNotAllowZeroOrNegativeWeightLimit(String badWeightLimit) {
+    assertThrows(
+        APIException.class,
+        () -> new Package(new BigDecimal(badWeightLimit), Collections.emptyList()));
   }
 
   @ParameterizedTest
-  @ValueSource(doubles = {0.01, 1, 99.99, 100})
-  void shouldAllowValidWeightLimits(double weightLimit) {
-    new Package(weightLimit, Collections.emptyList());
+  @ValueSource(strings = {"0.01", "1", "99.99", "100"})
+  void shouldAllowValidWeightLimits(String weightLimit) {
+    new Package(new BigDecimal(weightLimit), Collections.emptyList());
   }
 }
