@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.packer.core.Input;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class FileParser {
    * IMPORTANT: the returned stream has to be closed in order to properly release file handles.
    */
   public Stream<Input> parse(Path file) throws IOException {
-    return Files.lines(file)
+    return Files.lines(file, StandardCharsets.UTF_8)
         .map(lineParser)
         .filter(Optional::isPresent)
         .map(Optional::get);

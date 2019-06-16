@@ -46,7 +46,7 @@ class LineParserTest {
 
   @Test
   void shouldThrowExceptionIfTheWeightLimitSeparatorIsMissing() {
-    assertThrows(APIException.class, () -> parser.apply("51 (1,2.2,€3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("51 (1,2.2,\u20ac3.3)"));
   }
 
   @Test

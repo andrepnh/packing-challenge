@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ItemParser implements Parser<Iterable<Item>> {
+  private static final String EURO_SIGN = "\u20ac";
+
   @Override
   public Iterable<Item> apply(String raw) {
     // To support whitespaces inside the item we split at the closing parenthesis, but to facilitate
@@ -41,7 +43,7 @@ public class ItemParser implements Parser<Iterable<Item>> {
   }
 
   private double parseCurrency(String raw) {
-    check(raw.startsWith("€"), "Cost missing currency symbol: %s", raw);
-    return Double.parseDouble(raw.replaceFirst("€", ""));
+    check(raw.startsWith(EURO_SIGN), "Cost missing currency symbol: %s", raw);
+    return Double.parseDouble(raw.replaceFirst(EURO_SIGN, ""));
   }
 }

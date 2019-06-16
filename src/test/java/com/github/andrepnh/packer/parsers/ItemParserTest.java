@@ -20,7 +20,7 @@ class ItemParserTest {
 
   @Test
   void shouldParseMultipleItems() {
-    var rawItems = "(1,2.2,€3.3) (55,66.66,€77.77)";
+    var rawItems = "(1,2.2,\u20ac3.3) (55,66.66,\u20ac77.77)";
     var expectedItems = Lists.newArrayList(
         new Item(1, 3.3, 2.2),
         new Item(55, 77.77, 66.66)
@@ -32,7 +32,7 @@ class ItemParserTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {": (1,2.2,€3.3)", "(1,2.2,€3.3) ("})
+  @ValueSource(strings = {": (1,2.2,\u20ac3.3)", "(1,2.2,\u20ac3.3) ("})
   void shouldNotParseExtraSymbolsOutsideItem(String invalidItem) {
     assertThrows(APIException.class, () -> parser.apply(invalidItem));
   }
@@ -44,36 +44,36 @@ class ItemParserTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"(,2.2,€3.3)", "(1,,€3.3)", "(1,2.2,)"})
+  @ValueSource(strings = {"(,2.2,\u20ac3.3)", "(1,,\u20ac3.3)", "(1,2.2,)"})
   void shouldNotAllowEmptyFields(String invalidItem) {
     assertThrows(APIException.class, () -> parser.apply(invalidItem));
   }
 
   @Test
   void shouldNotAllowItemWithMoreThan3Fields() {
-    assertThrows(APIException.class, () -> parser.apply("(1,2.2,€3.3,4)"));
+    assertThrows(APIException.class, () -> parser.apply("(1,2.2,\u20ac3.3,4)"));
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"1,2.2,€3.3)", "(1,2.2,€3.3", "((1,2.2,€3.3)", "(1,2.2,€3.3))"})
+  @ValueSource(strings = {"1,2.2,\u20ac3.3)", "(1,2.2,\u20ac3.3", "((1,2.2,\u20ac3.3)", "(1,2.2,\u20ac3.3))"})
   void shouldNotParseItemWithUnbalancedParenthesis(String invalidItem) {
     assertThrows(APIException.class, () -> parser.apply(invalidItem));
   }
 
   @Test
   void shouldNotParseItemWithExtraParenthesis() {
-    assertThrows(APIException.class, () -> parser.apply("((1,2.2,€3.3))"));
+    assertThrows(APIException.class, () -> parser.apply("((1,2.2,\u20ac3.3))"));
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"1,2.2,€3.3", "[1,2.2,€3.3]", "{1,2.2,€3.3}"})
+  @ValueSource(strings = {"1,2.2,\u20ac3.3", "[1,2.2,\u20ac3.3]", "{1,2.2,\u20ac3.3}"})
   void shouldNotParseItemMissingParenthesis(String invalidItem) {
     assertThrows(APIException.class, () -> parser.apply(invalidItem));
   }
 
   @Test
   void shouldIgnoreTrailingWhitespaceAroundParenthesis() {
-    var rawItem = "  (1,2.2,€3.3) ";
+    var rawItem = "  (1,2.2,\u20ac3.3) ";
     var expectedItem = new Item(1, 3.3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);
@@ -83,7 +83,7 @@ class ItemParserTest {
 
   @Test
   void shouldIgnoreWhitespaceBetweenSeparators() {
-    var rawItem = "(1 , 2.2  ,   €3.3)";
+    var rawItem = "(1 , 2.2  ,   \u20ac3.3)";
     var expectedItem = new Item(1, 3.3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);
@@ -93,17 +93,17 @@ class ItemParserTest {
 
   @Test
   void shouldNotAllowNonNumericIndex() {
-    assertThrows(APIException.class, () -> parser.apply("(1a,2.2,€3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("(1a,2.2,\u20ac3.3)"));
   }
 
   @Test
   void shouldNotAllowNonNumericWeight() {
-    assertThrows(APIException.class, () -> parser.apply("(1,2.b,€3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("(1,2.b,\u20ac3.3)"));
   }
 
   @Test
   void shouldNotAllowNonNumericCost() {
-    assertThrows(APIException.class, () -> parser.apply("(1,2.2,€a3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("(1,2.2,\u20aca3.3)"));
   }
 
   @Test
@@ -113,17 +113,17 @@ class ItemParserTest {
 
   @Test
   void shouldNotAllowCostWithMultipleCurrencySymbols() {
-    assertThrows(APIException.class, () -> parser.apply("(1,2.2,€€3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("(1,2.2,\u20ac\u20ac3.3)"));
   }
 
   @Test
   void shouldNotAllowFloatingPointIndex() {
-    assertThrows(APIException.class, () -> parser.apply("(1.0,2.2,€3.3)"));
+    assertThrows(APIException.class, () -> parser.apply("(1.0,2.2,\u20ac3.3)"));
   }
 
   @Test
   void shouldAllowIntegerWeight() {
-    var rawItem = "(1,2,€3.3)";
+    var rawItem = "(1,2,\u20ac3.3)";
     var expectedItem = new Item(1, 3.3, 2);
 
     Iterable<Item> items = parser.apply(rawItem);
@@ -133,7 +133,7 @@ class ItemParserTest {
 
   @Test
   void shouldAllowIntegerCost() {
-    var rawItem = "(1,2.2,€3)";
+    var rawItem = "(1,2.2,\u20ac3)";
     var expectedItem = new Item(1, 3, 2.2);
 
     Iterable<Item> items = parser.apply(rawItem);

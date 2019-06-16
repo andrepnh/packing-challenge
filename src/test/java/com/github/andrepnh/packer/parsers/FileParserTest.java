@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.andrepnh.packer.core.Input;
+import com.github.andrepnh.packer.test.Resources;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -22,10 +23,10 @@ class FileParserTest {
   }
 
   @Test
-  void shouldIgnoreEmptyOptionals() throws IOException, URISyntaxException {
+  void shouldIgnoreEmptyOptionals() throws IOException {
     Function<String, Optional<Input>> emptyOptionalLineParser = s -> Optional.empty();
     var parser = new FileParser(emptyOptionalLineParser);
-    var path = Paths.get(ClassLoader.getSystemResource("abc_file.txt").toURI());
+    var path = Resources.asPath("abc_file.txt");
 
     List<Input> results = parser.parse(path)
         .collect(Collectors.toList());

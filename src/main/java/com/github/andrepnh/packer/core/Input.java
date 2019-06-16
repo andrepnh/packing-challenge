@@ -1,16 +1,16 @@
 package com.github.andrepnh.packer.core;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public class Input {
   private final int weightLimit;
 
-  private final ImmutableList<Item> items;
+  private final ImmutableSet<Item> items;
 
   public Input(int weightLimit, Iterable<Item> items) {
     this.weightLimit = weightLimit;
-    this.items = ImmutableList.copyOf(items);
+    this.items = ImmutableSet.copyOf(items);
   }
 
   @Override
@@ -25,7 +25,7 @@ public class Input {
     return weightLimit;
   }
 
-  public ImmutableList<Item> getItems() {
+  public ImmutableSet<Item> getItems() {
     return items;
   }
 }
