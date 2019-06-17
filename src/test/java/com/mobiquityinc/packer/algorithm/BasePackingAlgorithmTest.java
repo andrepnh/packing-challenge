@@ -41,6 +41,19 @@ class BasePackingAlgorithmTest {
   }
 
   @Test
+  void shouldAllowAsManyItemsAsPermitted() {
+    var limit = 15;
+    var items = Stream
+        .generate(() -> itemFactory.apply(costWeight(1, 1)))
+        .limit(limit)
+        .collect(Collectors.toSet());
+
+    Package pack = algorithm.pack(Package.MAXIMUM_LIMIT, items);
+
+    assertEquals(items, new HashSet<>(pack.getItems()));
+  }
+
+  @Test
   void shouldNotAllowMoreItemsThanPermitted() {
     var limit = 15;
     var items = Stream

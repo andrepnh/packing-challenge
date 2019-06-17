@@ -13,7 +13,7 @@ public interface PackingAlgorithm {
   Package pack(BigDecimal weightLimit, Set<Item> candidateItems);
 
   default void checkCandidatesAmount(Set<Item> candidateItems) {
-    check(candidateItems.size() < MAXIMUM_CANDIDATES,
+    check(candidateItems.size() <= MAXIMUM_CANDIDATES,
         "Can only consider %d items at a time; got %d",
         MAXIMUM_CANDIDATES, candidateItems.size());
   }
