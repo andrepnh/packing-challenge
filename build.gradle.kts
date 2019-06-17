@@ -19,12 +19,28 @@ sourceSets {
         }
         resources.srcDir("src/integration-test/resources")
     }
+
+    create("parityTest") {
+        java {
+            compileClasspath += sourceSets.main.get().output
+            runtimeClasspath += sourceSets.main.get().output
+            srcDir("src/parity-test/java")
+        }
+        resources.srcDir("src/parity-test/resources")
+    }
 }
 
 val integrationTestImplementation by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
 }
 val integrationTestRuntimeOnly by configurations.getting {
+    extendsFrom(configurations.testRuntime.get())
+}
+
+val parityTestImplementation by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+val parityTestRuntimeOnly by configurations.getting {
     extendsFrom(configurations.testRuntime.get())
 }
 
@@ -40,6 +56,9 @@ dependencies {
 
     integrationTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
     integrationTestImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+
+    parityTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+    parityTestImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
 }
 
 configure<JavaPluginConvention> {
@@ -64,6 +83,24 @@ val integrationTest = task<Test>("integrationTest") {
         events("PASSED", "FAILED")
     }
     shouldRunAfter("test")
+}
+
+val parityTest = task<Test>("parityTest") {
+    useJUnitPlatform()
+    description = "Generates random data to find discrepancies on algorithms"
+    group = "verification"
+    testClassesDirs = sourceSets["parityTest"].output.classesDirs
+    classpath = sourceSets["parityTest"].runtimeClasspath
+    // Forwarding parity tests duration system property
+    systemProperty("durationMinutes", System.getProperty("durationMinutes"))
+
+    testLogging {
+        showStandardStreams = true
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        events("PASSED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR")
+    }
 }
 
 tasks.check { dependsOn(integrationTest) }

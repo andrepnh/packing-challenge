@@ -6,7 +6,6 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.google.common.collect.Lists;
 import com.mobiquityinc.exception.APIException;
 import com.mobiquityinc.packer.core.Item;
 import com.mobiquityinc.packer.core.Package;
@@ -15,7 +14,6 @@ import com.google.common.collect.Sets;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
