@@ -1,9 +1,10 @@
 plugins {
     java
+    id("com.github.johnrengelman.shadow").version("5.0.0")
 }
 
-group = "com.github.andrepnh"
-version = "1.0-SNAPSHOT"
+group = "com.mobiquityinc.packer"
+version = "1.0"
 
 repositories {
     mavenCentral()
