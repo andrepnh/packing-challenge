@@ -19,31 +19,31 @@ class ItemTest {
 
   @Test
   void shouldAllowZeroWeight() {
-    new Item(1, ONE, ZERO);
-  }
-
-  @Test
-  void shouldNotAllowNegativeWeight() {
-    assertThrows(APIException.class, () -> new Item(1, ONE, new BigDecimal("-0.001")));
-  }
-
-  @Test
-  void shouldNotAllowWeightsGreaterThan100() {
-    assertThrows(APIException.class, () -> new Item(1, ONE, new BigDecimal("100.001")));
-  }
-
-  @Test
-  void shouldAllowZeroCost() {
     new Item(1, ZERO, ONE);
   }
 
   @Test
-  void shouldNotAllowNegativeCost() {
+  void shouldNotAllowNegativeWeight() {
     assertThrows(APIException.class, () -> new Item(1, new BigDecimal("-0.001"), ONE));
   }
 
   @Test
-  void shouldNotAllowCostsGreaterThan100() {
+  void shouldNotAllowWeightsGreaterThan100() {
     assertThrows(APIException.class, () -> new Item(1, new BigDecimal("100.001"), ONE));
+  }
+
+  @Test
+  void shouldAllowZeroCost() {
+    new Item(1, ONE, ZERO);
+  }
+
+  @Test
+  void shouldNotAllowNegativeCost() {
+    assertThrows(APIException.class, () -> new Item(1, ONE, new BigDecimal("-0.001")));
+  }
+
+  @Test
+  void shouldNotAllowCostsGreaterThan100() {
+    assertThrows(APIException.class, () -> new Item(1, ONE, new BigDecimal("100.001")));
   }
 }

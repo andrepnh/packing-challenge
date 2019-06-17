@@ -6,5 +6,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 public interface PackingAlgorithm {
+  int MAXIMUM_CANDIDATES = 15;
+
   Package pack(BigDecimal weightLimit, Set<Item> candidateItems);
 }

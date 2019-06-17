@@ -1,6 +1,7 @@
 package com.github.andrepnh.packer.algorithm;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.packer.core.Item;
 import com.github.andrepnh.packer.core.Package;
@@ -27,11 +28,14 @@ import java.util.Spliterator;
  * https://en.wikipedia.org/wiki/Knapsack_problem#Meet-in-the-middle
  */
 public class MeetInTheMiddlePacking implements PackingAlgorithm {
-  private static final Comparator<ItemSet> COMPARATOR_BY_WEIGHT = Comparator
-      .comparing(ItemSet::getTotalWeight);
+  private static final BigDecimal MAXIMUM_ITEM_SET_COST = Item.MAXIMUM_COST
+      .multiply(new BigDecimal(PackingAlgorithm.MAXIMUM_CANDIDATES));
 
-  private static final Comparator<ItemSet> COMPARATOR_BY_WEIGHT_AND_COST = COMPARATOR_BY_WEIGHT
-      .thenComparing(ItemSet::getTotalCost);
+  private static final Comparator<ItemSet> COMPARATOR_BY_COST_AND_REVERSED_WEIGHT = Comparator
+      .comparing(ItemSet::getTotalCost)
+      .thenComparing(Comparator
+          .comparing(ItemSet::getTotalWeight)
+          .reversed());
 
   @Override
   public Package pack(BigDecimal weightLimit, Set<Item> candidateItems) {
@@ -40,7 +44,7 @@ public class MeetInTheMiddlePacking implements PackingAlgorithm {
         .find(sets.getKey(), Sets::newHashSetWithExpectedSize, ItemSet::new);
     ArrayList<ItemSet> powerSet2 = PowerSets
         .find(sets.getValue(), Lists::newArrayListWithCapacity, ItemSet::new);
-    powerSet2.sort(COMPARATOR_BY_WEIGHT_AND_COST);
+    powerSet2.sort(COMPARATOR_BY_COST_AND_REVERSED_WEIGHT);
 
     var bestCostAndWeight = new CostAndWeight(ZERO, Item.MAXIMUM_WEIGHT);
     Set<Item> bestCombination = new HashSet<>();
@@ -63,48 +67,31 @@ public class MeetInTheMiddlePacking implements PackingAlgorithm {
     if (remainingWeight.signum() <= 0) {
       return new ItemSet();
     }
-    var dummySet = ItemSet.of(new Item(Integer.MAX_VALUE, Item.MAXIMUM_COST, remainingWeight));
-    int index = Collections.binarySearch(options, dummySet, COMPARATOR_BY_WEIGHT);
-    if (index > 0) {
-      return advanceToHighestCostWithSameWeight(options, index);
+    var dummySet = new DummyItemSet(remainingWeight, MAXIMUM_ITEM_SET_COST);
+    int result = Collections.binarySearch(options, dummySet, COMPARATOR_BY_COST_AND_REVERSED_WEIGHT);
+    if (result > 0) {
+      return options.get(result);
     } else {
-      // The javadoc for binarySearch explains the insertionPoint
-      var insertionPoint = Math.abs(index + 1);
-      return rewindToFirstLowerWeight(options, insertionPoint);
+      // Check binarySearch javadoc to understand why this would be the index of the dummy set
+      var dummySetIndexIfInserted = Math.abs(result + 1);
+      var firstIndexToSearch = dummySetIndexIfInserted - 1;
+      return rewindToFirstFit(options, firstIndexToSearch, remainingWeight);
     }
   }
 
-  private ItemSet rewindToFirstLowerWeight(List<ItemSet> options, int index) {
-    if (index == options.size()) {
-      return index == 0 ? new ItemSet() : options.get(index - 1);
+  private ItemSet rewindToFirstFit(List<ItemSet> options, int index, BigDecimal weightLimit) {
+    if (index <= 0) {
+      return new ItemSet();
     }
-    var currentWeight = options.get(index).getTotalWeight();
-    // The options were sorted by weight and then by cost, so all we have to do is rewind to the
-    // first set with totalWeight != currentWeight
-    for (index--; index >= 0; index--) {
+    // The options were sorted by cost and then by weight, so the first fit we find will already
+    // have the highest cost.
+    for (; index >= 0; index--) {
       var currentSet = options.get(index);
-      if (currentSet.getTotalWeight().compareTo(currentWeight) != 0) {
+      if (currentSet.getTotalWeight().compareTo(weightLimit) <= 0) {
         return currentSet;
       }
     }
     return new ItemSet();
-  }
-
-  private ItemSet advanceToHighestCostWithSameWeight(List<ItemSet> options, int index) {
-    ItemSet currentSet = options.get(index);
-    var bestWeight = currentSet.getTotalWeight();
-    var highestCostSet = currentSet;
-    // The options were sorted by weight and then by cost, so all we have to do is check the next
-    // elements until we find the last one that has the same weight. That set will also have the
-    // highest total cost.
-    for (index++; index < options.size(); index++) {
-      currentSet = options.get(index);
-      if (currentSet.getTotalWeight().compareTo(bestWeight) != 0) {
-        break;
-      }
-      highestCostSet = currentSet;
-    }
-    return highestCostSet;
   }
 
   private Entry<Set<Item>, Set<Item>> splitInHalf(Set<Item> set) {
@@ -120,6 +107,33 @@ public class MeetInTheMiddlePacking implements PackingAlgorithm {
       }
     }
     return Map.entry(firstHalf, secondHalf);
+  }
+
+  /**
+   * A dummy item set used only for binary searches. Doesn't really store any items, but we have
+   * control over its total weight and cost.
+   */
+  private static class DummyItemSet extends ItemSet {
+    private final CostAndWeight totalWeightAndCost;
+
+    public DummyItemSet(BigDecimal totalWeight, BigDecimal totalCost) {
+      this.totalWeightAndCost = new CostAndWeight(totalCost, totalWeight);
+    }
+
+    @Override
+    public CostAndWeight getCostAndWeight() {
+      return totalWeightAndCost;
+    }
+
+    @Override
+    public BigDecimal getTotalWeight() {
+      return totalWeightAndCost.getWeight();
+    }
+
+    @Override
+    public BigDecimal getTotalCost() {
+      return totalWeightAndCost.getCost();
+    }
   }
 
   /**

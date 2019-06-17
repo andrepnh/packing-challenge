@@ -15,7 +15,7 @@ class CostAndWeightTest {
   void sumOfShouldSumBothWeightAndCost() {
     int costMultiplier = 2;
     List<Item> items = IntStream.range(1, 30)
-        .mapToObj(val -> new Item(val, new BigDecimal(val * costMultiplier), new BigDecimal(val)))
+        .mapToObj(val -> new Item(val, new BigDecimal(val), new BigDecimal(val * costMultiplier)))
         .collect(Collectors.toList());
     var baseSum = items.stream()
         .map(Item::getWeight)

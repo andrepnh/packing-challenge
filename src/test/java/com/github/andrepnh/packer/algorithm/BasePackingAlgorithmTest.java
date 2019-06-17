@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 @Disabled
 class BasePackingAlgorithmTest {
-  private final PackingAlgorithm algorithm;
+  protected final PackingAlgorithm algorithm;
 
   BasePackingAlgorithmTest(PackingAlgorithm algorithm) {
     this.algorithm = requireNonNull(algorithm);
@@ -175,7 +175,7 @@ class BasePackingAlgorithmTest {
   private Function<CostAndWeight, Item> itemFactory() {
     // Working around "final" constraint of lambda expression
     int[] serial = {1};
-    return costWeight -> new Item(serial[0]++, costWeight.getCost(), costWeight.getWeight());
+    return costWeight -> new Item(serial[0]++, costWeight.getWeight(), costWeight.getCost());
   }
 
   // Convenience methods to make data setup slight more readable

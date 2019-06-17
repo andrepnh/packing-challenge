@@ -38,8 +38,7 @@ public class ItemParser implements Parser<Iterable<Item>> {
     check(fields.size() == 3, "Item doesn't have 3 fields: %s", raw);
     return new Item(
         tryParse("index", fields.get(0), Integer::parseInt),
-        tryParse("cost", fields.get(2), this::parseCurrency),
-        tryParse("weight", fields.get(1), BigDecimal::new)
+        tryParse("weight", fields.get(1), BigDecimal::new), tryParse("cost", fields.get(2), this::parseCurrency)
     );
   }
 

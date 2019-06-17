@@ -19,7 +19,7 @@ public class Item {
 
   private final BigDecimal weight;
 
-  public Item(int index, BigDecimal cost, BigDecimal weight) throws APIException {
+  public Item(int index, BigDecimal weight, BigDecimal cost) throws APIException {
     requireNonNull(cost);
     requireNonNull(weight);
     check(index > 0, "Index should be greater than 0; got %d", index);

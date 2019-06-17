@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.exception.APIException;
 import com.github.andrepnh.packer.algorithm.BruteForcePacking;
+import com.github.andrepnh.packer.algorithm.MeetInTheMiddlePacking;
 import com.github.andrepnh.packer.algorithm.PackingAlgorithm;
 import com.github.andrepnh.packer.core.Input;
 import com.github.andrepnh.packer.core.Item;
@@ -45,7 +46,7 @@ public class Packer {
   public static void pack(Path inputFile, PrintStream outputStream) throws APIException {
     var packer = new Packer(
         new FileParser(new LineParser(new ItemParser())),
-        new BruteForcePacking()
+        new MeetInTheMiddlePacking()
     );
     packer.packAndPrint(inputFile, outputStream);
   }

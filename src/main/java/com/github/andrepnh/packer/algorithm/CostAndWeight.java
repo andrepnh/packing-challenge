@@ -1,6 +1,7 @@
 package com.github.andrepnh.packer.algorithm;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.Objects.requireNonNull;
 
 import com.github.andrepnh.packer.core.Item;
 import com.google.common.base.MoreObjects;
@@ -13,8 +14,8 @@ class CostAndWeight {
   private final BigDecimal weight;
 
   CostAndWeight(BigDecimal cost, BigDecimal weight) {
-    this.cost = cost;
-    this.weight = weight;
+    this.cost = requireNonNull(cost);
+    this.weight = requireNonNull(weight);
   }
 
   static CostAndWeight sumOf(Iterable<Item> items) {

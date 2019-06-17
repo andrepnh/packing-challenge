@@ -23,8 +23,8 @@ class ItemParserTest {
   void shouldParseMultipleItems() {
     var rawItems = "(1,2.2,\u20ac3.3) (55,66.66,\u20ac77.77)";
     var expectedItems = Lists.newArrayList(
-        new Item(1, new BigDecimal("3.3"), new BigDecimal("2.2")),
-        new Item(55, new BigDecimal("77.77"), new BigDecimal("66.66"))
+        new Item(1, new BigDecimal("2.2"), new BigDecimal("3.3")),
+        new Item(55, new BigDecimal("66.66"), new BigDecimal("77.77"))
     );
 
     Iterable<Item> items = parser.apply(rawItems);
@@ -75,7 +75,7 @@ class ItemParserTest {
   @Test
   void shouldIgnoreTrailingWhitespaceAroundParenthesis() {
     var rawItem = "  (1,2.2,\u20ac3.3) ";
-    var expectedItem = new Item(1, new BigDecimal("3.3"), new BigDecimal("2.2"));
+    var expectedItem = new Item(1, new BigDecimal("2.2"), new BigDecimal("3.3"));
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -85,7 +85,7 @@ class ItemParserTest {
   @Test
   void shouldIgnoreWhitespaceBetweenSeparators() {
     var rawItem = "(1 , 2.2  ,   \u20ac3.3)";
-    var expectedItem = new Item(1, new BigDecimal("3.3"), new BigDecimal("2.2"));
+    var expectedItem = new Item(1, new BigDecimal("2.2"), new BigDecimal("3.3"));
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -125,7 +125,7 @@ class ItemParserTest {
   @Test
   void shouldAllowIntegerWeight() {
     var rawItem = "(1,2,\u20ac3.3)";
-    var expectedItem = new Item(1, new BigDecimal("3.3"), new BigDecimal(2));
+    var expectedItem = new Item(1, new BigDecimal(2), new BigDecimal("3.3"));
 
     Iterable<Item> items = parser.apply(rawItem);
 
@@ -135,7 +135,7 @@ class ItemParserTest {
   @Test
   void shouldAllowIntegerCost() {
     var rawItem = "(1,2.2,\u20ac3)";
-    var expectedItem = new Item(1, new BigDecimal(3), new BigDecimal("2.2"));
+    var expectedItem = new Item(1, new BigDecimal("2.2"), new BigDecimal(3));
 
     Iterable<Item> items = parser.apply(rawItem);
 

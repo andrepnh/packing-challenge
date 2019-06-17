@@ -24,7 +24,7 @@ class PackageTest {
     double weightLimit = 100, itemWeight = 0.01;
     for (int itemAmount: new int[] {0, 1, (int)(weightLimit / itemWeight)}) {
       List<Item> items = IntStream.range(0, itemAmount)
-          .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, ONE, new BigDecimal("0.01")))
+          .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, new BigDecimal("0.01"), ONE))
           .collect(Collectors.toList());
       new Package(new BigDecimal(100), items);
     }
@@ -34,7 +34,7 @@ class PackageTest {
   void shouldNotAllowItemsWeightToExceedPackageLimit() {
     int itemAmount = 3, itemWeight = 3, packageLimit = itemWeight * itemAmount - 1;
     List<Item> items = IntStream.range(0, itemAmount)
-        .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, ONE, new BigDecimal(itemWeight)))
+        .mapToObj(zeroBasedIndex -> new Item(zeroBasedIndex + 1, new BigDecimal(itemWeight), ONE))
         .collect(Collectors.toList());
     assertThrows(
         IllegalArgumentException.class,
